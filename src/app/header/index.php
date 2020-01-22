@@ -18,7 +18,7 @@
       }
       if ($_SESSION['department'] == "Logistics") {
         echo(
-          "<a href='" . APP_PATH . "/logisticsPortal/index.php" . "'><li>Logistiek portaal</li></a>"
+          "<a href='" . APP_PATH . "/logisticPortal/index.php" . "'><li>Logistiek portaal</li></a>"
         );
       }
       if ($_SESSION['department'] == "Purchasing") {

@@ -13,7 +13,31 @@ include "functions.php";
       echo ("<link rel='stylesheet' href='" . APP_PATH . "/header/style.css". "'>");
     ?>
     <main>
-
+      <div class="logisticListContainer">
+        <h2>Logistics List</h2>
+        <table class="logisticTable">
+          <thead>
+            <tr>
+              <th>Order Id</th>
+              <th>Naam</th>
+              <th>Department</th>
+              <th>Product</th>
+              <th>Aantal</th>
+              <th>Actie</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Max van der Velde</td>
+              <td>Logistics</td>
+              <td>Laptop</td>
+              <td>3</td>
+              <td>Actie</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </main>
 </body>
 
