@@ -19,8 +19,12 @@ table {
     width: 100%;
 }
 
-.emptyTable {
+.emptyLogistic {
   width: 100%;
+  text-align: center;
+}
+
+.emptyLogistic td{
   text-align: center;
 }
 

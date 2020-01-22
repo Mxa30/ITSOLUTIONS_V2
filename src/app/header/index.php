@@ -2,6 +2,22 @@
     <ul class="headerInfo">
         <li><b>Naam:</b> <?php echo($_SESSION['name']) ?></li>
         <li><b>Department:</b> <?php echo($_SESSION['department']) ?></li>
+        <?php
+          if ($_SESSION['is_dept_manager']) {
+            $sqlGetBudget="
+            select budget, rest_budget
+            from department
+            where name = '{$_SESSION['department']}';";
+            $sqlGetBudgetResult = mysqli_query($conn, $sqlGetBudget);
+
+            while ($record = mysqli_fetch_assoc($sqlGetBudgetResult)) {
+              echo "
+              <li><b>Budget:</b>{$record['budget']}</li>
+              <li><b>Resterend budget:</b>{$record['rest_budget']}</li>
+              ";
+            }
+          }
+        ?>
     </ul>
     <ul class="headerNav">
       <a href="<?php echo(APP_PATH . "/buyportal/index.php");?>"><li>Koop portaal</li></a>

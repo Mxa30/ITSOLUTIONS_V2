@@ -14,17 +14,65 @@ $sqlGetOrder = "
   O.approved is null;";
   $sqlGetOrderResult = mysqli_query($conn, $sqlGetOrder);
 
-  function acceptRequest($conn, $orderId) {
-    $sqlAcceptOrderQuery = "
-    UPDATE `_order`
-    SET approved = '1'
-    WHERE `id` = {$orderId};";
+  function acceptRequest($conn, $orderId, $totalPrice) {
+    // CHECK IF THE PURCHASE IS JUSTIFIED BY THE BUDGET
+    $sqlGetBudget="
+    select budget, rest_budget
+    from department
+    where name = '{$_SESSION['department']}';";
+    $sqlGetBudgetResult = mysqli_query($conn, $sqlGetBudget);
 
-    if (mysqli_query($conn, $sqlAcceptOrderQuery)) {
-      //UPDATES
-      header("Refresh:0");
-    }else{
-      echo "Error: " . $sqlAcceptOrderQuery . "<br>" . mysqli_error($conn);
+    while ($record = mysqli_fetch_assoc($sqlGetBudgetResult)) {
+      if ($record['rest_budget']-$totalPrice >= 0) { //IF RESTEREND BUDGET - PRIJS GROTER IS OF GELIJK AAN 0 IS, VOER UIT
+        // CHANGE BUDGET
+        $newRestBudget = $record['rest_budget']-$totalPrice;
+        $sqlChangeBudget = "
+        UPDATE `department`
+        SET rest_budget = '{$newRestBudget}'
+        WHERE name = '{$_SESSION['department']}';";
+
+        if (mysqli_query($conn, $sqlChangeBudget)) { //IF QUERRY SUCCESFUL CONTINUE
+          $sqlGetSupplier = "
+          SELECT S.name, S.email, P.name prodName, O.amount
+          FROM _Order O
+          INNER JOIN Product P on P.id = O.prod_id
+          INNER JOIN Supplier S on S.name = P.supplier
+          WHERE O.id = '{$orderId}';
+          ";
+          $sqlGetSupplierResult = mysqli_query($conn, $sqlGetSupplier);
+          while ($record = mysqli_fetch_assoc($sqlGetSupplierResult)) {
+            // SEND EMAIL
+            $to_email = 'maxvelde_3010@hotmail.com';
+            $subject = 'Order placement from IT Solutions';
+            $headers = "Content-Type: text/html; charset='UTF-8'";
+            $message = "
+            Beste {$record['name']}, hierbij de volgende bestelling: <br>
+            Ons OrderID: {$orderId}.<br>
+            Product: {$record['prodName']}.<br>
+            Aantal: {$record['amount']}.<br>
+            De door ons berekende prijs: {$totalPrice}.
+            ";
+            mail($to_email,$subject,$message,$headers);
+          }
+
+          // SET APPROVED TO TRUE
+          $sqlAcceptOrderQuery = "
+          UPDATE `_order`
+          SET approved = '1'
+          WHERE `id` = '{$orderId}';";
+
+          if (mysqli_query($conn, $sqlAcceptOrderQuery)) {
+            //UPDATES
+            header("Refresh:0");
+          }else{
+            echo "Error: " . $sqlAcceptOrderQuery . "<br>" . mysqli_error($conn);
+          }
+        }else {
+          header("Refresh:0");
+        }
+      }else {
+        header("Refresh:0");
+      }
     }
   }
 
@@ -47,7 +95,8 @@ $sqlGetOrder = "
     while($record = mysqli_fetch_assoc($sqlGetOrderResult)){
       if (isset($_POST['accept' . $record['id']])) {
         // Call acceptRequest function with the parameters form the according request
-        acceptRequest($conn, $record['id']);
+        $totalPrice = $record['price']*$record['amount'];
+        acceptRequest($conn, $record['id'], $totalPrice);
       }
       if (isset($_POST['deny' . $record['id']])) {
 

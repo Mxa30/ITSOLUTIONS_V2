@@ -27,14 +27,40 @@ include "functions.php";
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>Max van der Velde</td>
-              <td>Logistics</td>
-              <td>Laptop</td>
-              <td>3</td>
-              <td>Actie</td>
-            </tr>
+            <?php
+              $logisticOrders = [];
+              while ($record = mysqli_fetch_assoc($sqlGetLogisticsResult)) {
+                $logisticOrders[] = $record;
+              }
+              $_SESSION['logisticOrders'] = $logisticOrders;
+
+              if (!empty($_SESSION['logisticOrders'])) {
+                foreach($_SESSION['logisticOrders'] as $record){
+                  echo("
+                  <tr>
+                    <td>{$record['id']}</td>
+                    <td>{$record['empName']}</td>
+                    <td>{$record['department_name']}</td>
+                    <td>{$record['prodName']}</td>
+                    <td>{$record['amount']}</td>
+                    <td>
+                    <form method='post'>
+                      <button type='submit' name='deliver{$record['id']}'>Geleverd</button>
+                    </form>
+                    </td>
+                  </tr>
+                  ");
+                }
+              }else {
+                echo("
+                <table class='emptyLogistic'>
+                  <tr>
+                    <td>Er zijn geen nieuwe bestellingen meer</td>
+                  </tr>
+                </table>
+                ");
+              }
+            ?>
           </tbody>
         </table>
       </div>
