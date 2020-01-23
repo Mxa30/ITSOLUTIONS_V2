@@ -13,48 +13,76 @@ include "functions.php";
       echo ("<link rel='stylesheet' href='" . APP_PATH . "/header/style.css". "'>");
     ?>
     <main>
-      <?php
-      //sql query om order informatie op te vragen.
-        $getOrder = "
-        select id, approved, picked_up, delivered, prod_id, amount, paid
-        from _Order
-        where approved = 1
-        order by id desc;";
-        $sqlGetFinanceOrderResult = mysqli_query($conn, $getOrder);
-
-        //overziht van de openstaande invoices.
-        //wanneer betaald is een notificatie naar depManPortal.
-       ?>
        <div class="orderContainer">
          <h2>Openstaande orders</h2>
+         <form method="post" class="search">
+           <input type="text" name="rearchOrderId" placeholder="Zoek op order id">
+           <input type="submit" name="submitResId" value="Submit">
+         </form>
          <table>
            <thead>
-             <th> ID</th>
-             <th> Approved </th>
+             <th> Order id</th>
              <th> Deliverd </th>
-             <th> Picked up </th>
+             <th> Product goedgekeurd </th>
              <th> Product ID</th>
+             <th> Product naam</th>
              <th> Amount </th>
+             <th> Totaalprijs </th>
              <th> Paid </th>
              <th> Actie </th>
            </thead>
            <tbody>
              <?php
+             $financeOrders = [];
              while ($record = mysqli_fetch_assoc($sqlGetFinanceOrderResult)) {
-               echo "<tr>
-                        <td>{$record['id']}</td>
-                        <td>{$record['approved']}</td>
-                        <td>{$record['delivered']}</td>
-                        <td>{$record['picked_up']}</td>
-                        <td>{$record['prod_id']}</td>
-                        <td>{$record['amount']}</td>
-                        <td>{$record['paid']}</td>
-                        <td>
-                        <form method='post'>
-                         <input type='submit' name='betalen{$record['id']}' value='betalen'>
-                        </form>
-                        </td>
-                    </tr>";
+               $financeOrders[] = $record;
+             }
+             $_SESSION['financeOrders'] = $financeOrders;
+             if (!empty($_SESSION['financeOrders'])) {
+               foreach ($_SESSION['financeOrders'] as $record) {
+                 if ($record['delivered'] == 0) {
+                   $delivered = "Nee";
+                 }else {
+                   $delivered = "Ja";
+                 }
+
+                 if ($record['picked_up'] == 0) {
+                   $pickedUp = "Nee";
+                 }else {
+                   $pickedUp = "Ja";
+                 }
+
+                 if ($record['paid'] == 0) {
+                   $paid = "Nee";
+                 }else {
+                   $paid = "Ja";
+                 }
+
+                 $totalPrice = $record['price']*$record['amount'];
+                 echo "<tr>
+                 <td>{$record['id']}</td>
+                 <td>{$delivered}</td>
+                 <td>{$pickedUp}</td>
+                 <td>{$record['prod_id']}</td>
+                 <td>{$record['prodName']}</td>
+                 <td>{$record['amount']}</td>
+                 <td>{$totalPrice}</td>
+                 <td>{$paid}</td>
+                 <td>
+                 <form method='post'>
+                 <button type='submit' name='pay{$record['id']}'>Betaald</button>
+                 </form>
+                 </td>
+                 </tr>";
+               }
+             }else {
+               echo "
+               <table class='emptyOrder'>
+                 <tr>
+                   <td>Geen Orders gevonden</td>
+                 </tr>
+               </table>
+               ";
              }
              ?>
            </tbody>

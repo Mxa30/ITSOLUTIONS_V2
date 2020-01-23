@@ -5,13 +5,24 @@ if ($_SESSION['logged'] != true || $_SESSION['is_dept_manager'] != true) {
 }
 
 // Get all order requests which are not approved yet
-$sqlGetOrder = "
+if ($_SESSION['department'] == "CEO") {
+  $sqlGetOrder = "
+    select O.id, E.name empName, P.name prodName, P.price, O.amount, O.reason
+    from _Order O
+    inner join Employee E on E.id = O.employee_id
+    inner join Product P on P.id = O.prod_id
+    where E.is_dept_manager = '1' AND
+    O.approved is null;";
+}else {
+  $sqlGetOrder = "
   select O.id, E.name empName, P.name prodName, P.price, O.amount, O.reason
   from _Order O
   inner join Employee E on E.id = O.employee_id
   inner join Product P on P.id = O.prod_id
   where '{$_SESSION['department']}' = E.department_name AND
+  E.id != '{$_SESSION['employee_id']}' AND
   O.approved is null;";
+}
   $sqlGetOrderResult = mysqli_query($conn, $sqlGetOrder);
 
   function acceptRequest($conn, $orderId, $totalPrice) {

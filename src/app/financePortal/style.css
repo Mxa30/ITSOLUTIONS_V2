@@ -33,3 +33,16 @@ thead tr{
 textarea {
   resize: none;
 }
+
+.orderContainer {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.emptyOrder {
+  width: 100%;
+}
+
+.search {
+  margin-bottom: 20px;
+}
