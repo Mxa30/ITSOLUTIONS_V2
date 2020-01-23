@@ -36,6 +36,7 @@ include "functions.php";
              <th> Product ID</th>
              <th> Amount </th>
              <th> Paid </th>
+             <th> Actie </th>
            </thead>
            <tbody>
              <?php
@@ -43,11 +44,16 @@ include "functions.php";
                echo "<tr>
                         <td>{$record['id']}</td>
                         <td>{$record['approved']}</td>
-                        <td>{$record['deliverd']}</td>
+                        <td>{$record['delivered']}</td>
                         <td>{$record['picked_up']}</td>
                         <td>{$record['prod_id']}</td>
                         <td>{$record['amount']}</td>
                         <td>{$record['paid']}</td>
+                        <td>
+                        <form method='post'>
+                         <input type='submit' name='betalen{$record['id']}' value='betalen'>
+                        </form>
+                        </td>
                     </tr>";
              }
              ?>
