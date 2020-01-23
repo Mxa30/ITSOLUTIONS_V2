@@ -33,3 +33,71 @@ thead tr{
 textarea {
   resize: none;
 }
+
+.emptyPurchase {
+  width: 100%;
+}
+
+.inkoopContainer {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.inkoopFormulierActive {
+  display: block!important;
+}
+
+.inkoopFormulier {
+  padding: 0 0 10px 0;
+  width: 50%;
+  position: absolute;
+  background-color: #282C34;
+  color: #fff;
+  height: auto;
+  transform: translate(-50%,-50%);
+  left: 50%;
+  top: 50%;
+  -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+  -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+  box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
+  display: none;
+}
+
+.inkoopFormulier h2 {
+  text-align: center;
+}
+
+.newProdForm input, .newProdForm select, .newProdForm button, .newProdForm label {
+  text-align: center;
+  display: block;
+  margin: 10px auto;
+}
+
+.X {
+  width: 25px;
+  height: 25px;
+  margin: 10px auto 0;
+  overflow: visible;
+  position: relative;
+  cursor: pointer;
+}
+
+.line1 {
+  width: 100%;
+  height: 2px;
+  position: absolute;
+  transform: translate(-50%,-50%);
+  transform: rotate(-45deg);
+  top: 50%;
+  background-color: #fff;
+}
+
+.line2 {
+  width: 100%;
+  height: 2px;
+  position: absolute;
+  transform: translate(-50%,-50%);
+  transform: rotate(45deg);
+  top: 50%;
+  background-color: #fff;
+}

@@ -1,5 +1,10 @@
 <?php
 
+if ($_SESSION['logged'] != true || $_SESSION['department'] != "Logistics") {
+  $redirectlocation = APP_PATH . "/login/index.php";
+  return header("location: {$redirectlocation}");
+}
+
 $sqlGetLogistics = "
   select O.id, E.name empName, E.department_name, P.name prodName, O.amount
   from _Order O

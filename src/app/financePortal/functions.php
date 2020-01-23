@@ -1,4 +1,9 @@
 <?php
+if ($_SESSION['logged'] != true || $_SESSION['department'] != "Finance") {
+  $redirectlocation = APP_PATH . "/login/index.php";
+  return header("location: {$redirectlocation}");
+}
+
   $getOrder = "
   select O.id, O.approved, O.picked_up, O.delivered, O.prod_id, O.amount, O.paid, P.price, P.name prodName
   from _Order O, Product P
