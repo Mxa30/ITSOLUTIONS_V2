@@ -1,4 +1,21 @@
 <?php
+  if ($_SESSION['department'] == "CEO") {
+  $sqlgetRequest = "
+  select i.prod_naam prodNaam, i.prod_omschrijving prodOms, i.reden Reden, e.name Naam
+  from inkoop i
+  INNER JOIN employee e ON e.id = i.employee_id
+  where '{$_SESSION['department']}' = e.department_name;";
+  } else {
+    $sqlgetRequest = "
+    select i.prod_naam prodNaam, i.prod_omschrijving prodOms, i.reden Reden, e.name Naam
+    from inkoop i
+    INNER JOIN employee e ON e.id = i.employee_id
+    where '{$_SESSION['department']}' = e.department_name AND
+    e.id != '{$_SESSION['employee_id']}';";
+}
+ $sqlGetRequestResult = mysqli_query($conn, $sqlgetRequest);
+
+
 if ($_SESSION['logged'] != true || $_SESSION['is_dept_manager'] != true) {
   $redirectlocation = APP_PATH . "/login/index.php";
   return header("location: {$redirectlocation}");

@@ -81,6 +81,49 @@ include "functions.php";
           </tbody>
         </table>
       </div>
+      <div class="newItems">
+        <h2>Nieuwe product verzoeken</h2>
+        <table class="requestTable">
+          <thead>
+            <th>Naam</th>
+            <th>Product</th>
+            <th>omschrijving</th>
+            <th>Reden</th>
+            <th>Actie</th>
+          </thead>
+          <?php
+
+            $requests = [];
+            while ($record = mysqli_fetch_assoc($sqlGetRequestResult)) {
+              $requests[] = $record;
+            }
+            $_SESSION['requests'] = $requests;
+            if (!empty($_SESSION['requests'])) {
+              foreach($_SESSION['requests'] as $record){
+                echo(
+                  "
+                  <tr>
+                  <td>{$record['Naam']}</td
+                  <td>{$record['prodNaam']}</td>
+                  <td>{$record['prodOms']}</td>
+                  <td>{$record['Reden']}</td>
+            "); }
+            }else {
+              echo(
+                "
+                <tr>
+                <table class='emptyTable'>
+                  <tr>
+                    <td>Er zijn geen nieuwe verzoeken meer</td>
+                  </tr>
+                </table>
+                </tr>
+                "
+              );
+            }
+          ?>
+        </tbody>
+      </div>
     </main>
 
 </body>

@@ -53,3 +53,7 @@ textarea {
 .ordersTable {
   margin: 0 auto;
 }
+
+.newItems {
+  width: 100%;
+}
