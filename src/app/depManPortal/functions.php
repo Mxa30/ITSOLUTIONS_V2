@@ -25,6 +25,28 @@ if ($_SESSION['department'] == "CEO") {
 }
   $sqlGetOrderResult = mysqli_query($conn, $sqlGetOrder);
 
+  function changeBudget($conn, $budget) {
+    $sqlGetBudget="
+    select budget, rest_budget
+    from department
+    where name = '{$_SESSION['department']}';";
+    $sqlGetBudgetResult = mysqli_query($conn, $sqlGetBudget);
+
+    while ($record = mysqli_fetch_assoc($sqlGetBudgetResult)) {
+      $newRestBudget = $record['rest_budget'] + ($budget - $record['budget']);
+      $sqlChangeBudget = "
+      UPDATE `department`
+      SET rest_budget = '{$newRestBudget}', budget = '{$budget}'
+      WHERE name = '{$_SESSION['department']}';";
+
+      if (mysqli_query($conn, $sqlChangeBudget)) { //IF QUERRY SUCCESFUL CONTINUE
+        header("Refresh:0");
+      }else {
+        echo "Error: " . $sqlChangeBudget . "<br>" . mysqli_error($conn);
+      }
+    }
+  }
+
   function acceptRequest($conn, $orderId, $totalPrice) {
     // CHECK IF THE PURCHASE IS JUSTIFIED BY THE BUDGET
     $sqlGetBudget="
@@ -103,6 +125,9 @@ if ($_SESSION['department'] == "CEO") {
   }
 
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['budgetPriceButton'])) {
+      changeBudget($conn, $_POST['budgetPrice']);
+    }
     while($record = mysqli_fetch_assoc($sqlGetOrderResult)){
       if (isset($_POST['accept' . $record['id']])) {
         // Call acceptRequest function with the parameters form the according request

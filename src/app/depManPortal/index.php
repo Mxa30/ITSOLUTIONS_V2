@@ -14,6 +14,14 @@ include "functions.php";
     ?>
 
     <main>
+      <!-- NEW BUDGET CHANGE START -->
+      <div class="changeBudgetContainer">
+        <form method="post">
+          <input type="number" step="0.01" name="budgetPrice" placeholder="Nieuw budget">
+          <button type="submit" name="budgetPriceButton">Verander budget</button>
+        </form>
+      </div>
+      <!-- NEW BUDGET CHANGE END -->
       <div class="ordersContainer">
         <h2>Binnengekomen verzoeken</h2>
         <table class="ordersTable">

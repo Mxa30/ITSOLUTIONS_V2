@@ -53,3 +53,7 @@ textarea {
 .ordersTable {
   margin: 0 auto;
 }
+
+.changeBudgetContainer {
+  margin: 40px auto 0 ;
+}
