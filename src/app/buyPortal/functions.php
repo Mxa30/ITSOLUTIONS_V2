@@ -20,6 +20,13 @@
   where '{$_SESSION['employee_id']}' = O.employee_id AND
   O.picked_up is null;";
 
+  $sqlgetRequest = "
+  select i.id, e.name, i.prod_naam prodName, i.prod_omschrijving, i.reden, i.approved, i.added
+  from inkoop i
+  INNER JOIN employee e ON i.employee_id = e.id
+  WHERE e.id = '{$_SESSION['employee_id']}';";
+  $sqlGetRequestResult = mysqli_query($conn, $sqlgetRequest);
+
   $sqlGetOrderReqResult = mysqli_query($conn, $sqlGetOrderReq);
 
   // Initialize cart in global scope
@@ -80,6 +87,18 @@
     }
   }
 
+  function addPurchaceRequest($conn, $prodName, $prodDesc, $prodReson) {
+    $sqlPostProdRequestQuery = "
+    INSERT INTO `inkoop` (`prod_naam`, `prod_omschrijving`, `reden`, `employee_id`)
+    VALUES ('{$prodName}', '{$prodDesc}', '{$prodReson}', '{$_SESSION['employee_id']}');";
+
+    if (mysqli_query($conn, $sqlPostProdRequestQuery)) {
+      header("Refresh:0");
+    }else{
+      echo "Error: " . $sqlPostProdRequestQuery . "<br>" . mysqli_error($conn);
+    }
+  }
+
   // Find the rigth post request for calling the functions
   if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     while($record = mysqli_fetch_assoc($sqlGetProdResult)){
@@ -115,6 +134,11 @@
     while($record = mysqli_fetch_assoc($sqlGetOrderReqResult)){
       if (isset($_POST['approveDelivery' . $record['id']])) {
         pickUp($conn, $record['id']);
+      }
+    }
+    if (isset($_POST['submitNewProduct'])) {
+      if (!empty($_POST['newProdName']) && !empty($_POST['newProdDesc']) && !empty($_POST['newProdReason'])) {
+        addPurchaceRequest($conn, $_POST['newProdName'], $_POST['newProdDesc'], $_POST['newProdReason']);
       }
     }
   }

@@ -52,9 +52,15 @@ textarea {
 
 .logisticListContainer {
   width: 100%;
+  margin-bottom: 50px;
 }
 
 .logisticTable {
   margin: 0 auto;
+  text-align: center;
+}
+
+.search {
+  margin-bottom: 20px;
   text-align: center;
 }

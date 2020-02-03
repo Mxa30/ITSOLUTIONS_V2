@@ -13,6 +13,7 @@ include "functions.php";
       echo ("<link rel='stylesheet' href='" . APP_PATH . "/header/style.css". "'>");
     ?>
     <main>
+      <div class="leftContainer">
         <div class="prodContainer">
           <h2>Producten</h2>
           <table>
@@ -27,13 +28,11 @@ include "functions.php";
               $options .= ("<option value='{$i}'>{$i}</option>");
             }
             if ($sqlGetProdResult) {
-              if (!isset($_SESSION['prod'])){
-                $prod = [];
-                while ($record = mysqli_fetch_assoc($sqlGetProdResult)) {
-                  $prod[] = $record;
-                }
-                $_SESSION['prod'] = $prod;
+              $prod = [];
+              while ($record = mysqli_fetch_assoc($sqlGetProdResult)) {
+                $prod[] = $record;
               }
+              $_SESSION['prod'] = $prod;
               if (!empty($_SESSION['prod'])) {
                 foreach($_SESSION['prod'] as $record){
                   echo (
@@ -52,29 +51,39 @@ include "functions.php";
               }else {
                 echo (
                   "<tr>
-                    <table class='emptyProd'>
-                      <tr>
-                        <td>Er zijn op dit moment geen producten beschikbaar</td>
-                      </tr>
-                    </table>
+                  <table class='emptyProd'>
+                  <tr>
+                  <td>Er zijn op dit moment geen producten beschikbaar</td>
+                  </tr>
+                  </table>
                   </tr>"
                 );
               }
             }else {
               echo (
                 "<tr>
-                  <table class='emptyProd'>
-                    <tr>
-                      <td>Er zijn op dit moment geen producten beschikbaar</td>
-                    </tr>
-                  </table>
-                </tr>"
-              );
-            }
-            ?>
+                <table class='emptyProd'>
+                <tr>
+                  <td>Er zijn op dit moment geen producten beschikbaar</td>
+                </tr>
+              </table>
+            </tr>"
+            );
+          }
+          ?>
 
-          </table>
+        </table>
+        <div class="newProdContainer">
+          <h2>Verzoek nieuw product</h2>
+          <form method="post">
+            <input type="text" name="newProdName" placeholder="Naam product" required>
+            <textarea name="newProdDesc" placeholder="Product omschrijving" required></textarea>
+            <textarea name="newProdReason" placeholder="Reden" required></textarea>
+            <button type="submit" name="submitNewProduct">Stuur nieuw product verzoek</button>
+          </form>
         </div>
+      </div>
+      </div>
         <div class="rightContainer">
           <div class="cartContainer">
             <h2>Cart</h2>
@@ -115,7 +124,7 @@ include "functions.php";
                       <select name='amountCart{$prod['id']}'>{$options}</select>
                       </td>
                       <td>
-                      <textarea name='reason{$prod['id']}'></textarea>
+                      <textarea name='reason{$prod['id']}' placeholder='Reden'></textarea>
                       <input type='submit' name='removeCartItem{$prod['id']}' value='Verwijder'>
                       </td>
                       </tr>"
@@ -229,6 +238,61 @@ include "functions.php";
                       </tbody>
                     </table>
                   </div>
+          <div class="requestNewContainer">
+            <h2>Nieuwe product verzoeken</h2>
+            <table>
+              <thead>
+                <th>Product naam</th>
+                <th>Product omschrijving</th>
+                <th>Reden</th>
+                <th>Status</th>
+              </thead>
+              <tbody>
+                <?php
+                  $newProdRequest = [];
+                  while ($record = mysqli_fetch_assoc($sqlGetRequestResult)) {
+                    $newProdRequest[] = $record;
+                  }
+                  $_SESSION['newProdRequest'] = $newProdRequest;
+                  if (!empty($_SESSION['newProdRequest'])) {
+                    foreach($_SESSION['newProdRequest'] as $record){
+                      if ($record['approved'] == null) {
+                        $status = "Goedkeuring afwachten";
+                      }elseif ($record['approved'] == 0) {
+                        $status = "Geweigerd";
+                      }elseif ($record['approved'] == 1 && $record['added'] == null) {
+                        $status = "Geaccepteerd - Toevoeging afwachtend";
+                      }elseif ($record['approved'] == 1 && $record['added'] == 1) {
+                        $status = "Product toegevoegd";
+                      }
+                      echo(
+                        "
+                        <tr>
+                        <td>{$record['prodName']}</td>
+                        <td>{$record['prod_omschrijving']}</td>
+                        <td>{$record['reden']}</td>
+                        <td>{$status}</td>
+                        </tr>
+                        "
+                      );
+                    }
+                  }else {
+                    echo(
+                      "
+                      <tr>
+                      <table class='emptyTable'>
+                        <tr>
+                          <td>Er zijn geen nieuwe verzoeken meer</td>
+                        </tr>
+                      </table>
+                      </tr>
+                      "
+                    );
+                  }
+                ?>
+              </tbody>
+            </table>
+          </div>
         </div>
     </main>
 </body>

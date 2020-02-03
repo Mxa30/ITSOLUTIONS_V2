@@ -15,9 +15,18 @@ if ($_SESSION['logged'] != true || $_SESSION['department'] != "Purchasing") {
   $getInkoopOrder = "
   select id, prod_naam, prod_omschrijving, reden, employee_id, approved, added
   from Inkoop
-  WHERE added is null
+  WHERE approved = 1 AND
+  added is null
   order by id desc;";
   $sqlGetInkoopOrder = mysqli_query($conn, $getInkoopOrder);
+
+  $getOrder = "
+  select O.id, O.approved, O.picked_up, O.delivered, O.prod_id, O.amount, O.paid, P.price, P.name prodName, P.supplier
+  from _Order O, Product P
+  where approved = 1 and
+  O.prod_id = P.id
+  order by id desc;";
+  $sqlGetFinanceOrderResult = mysqli_query($conn, $getOrder);
 
   // $sqlGetOrder = "
   // select O.id, E.name empName, P.name prodName, P.price, O.amount, O.reason
@@ -27,6 +36,17 @@ if ($_SESSION['logged'] != true || $_SESSION['department'] != "Purchasing") {
   // where '{$_SESSION['department']}' = E.department_name AND
   // O.approved is null;";
   // $sqlGetOrderResult = mysqli_query($conn, $sqlGetOrder);
+
+  function searchOrder($id){
+    $idVal = "and O.id = '{$id}'";
+    $getOrder = "
+    select O.id, O.approved, O.picked_up, O.delivered, O.prod_id, O.amount, O.paid, P.price, P.name prodName
+    from _Order O, Product P
+    where approved = 1 and
+    O.prod_id = P.id {$idVal}
+    order by id desc;";
+    return $getOrder;
+  }
 
   function addProduct($conn, $orderId, $record) {
     if ($record['prodSupplier'] == "0") {
@@ -41,16 +61,49 @@ if ($_SESSION['logged'] != true || $_SESSION['department'] != "Purchasing") {
         VALUES ('{$record['prodName']}', '{$record['prodPrice']}', '{$record['supplierName']}');
         ";
         if (mysqli_query($conn, $sqlQuery)) {
-          $sqlDeliverOrderQuery = "
-          UPDATE `inkoop`
-          SET added = '1'
-          WHERE `id` = '{$orderId}';";
+          $sqlGetSupplier = "
+          SELECT S.name, S.email, P.name prodName, p.id prodId,  O.amount
+          FROM _Order O
+          INNER JOIN Product P on P.id = O.prod_id
+          INNER JOIN Supplier S on S.name = P.supplier
+          WHERE O.id = '{$orderId}';
+          ";
+          $sqlGetSupplierResult = mysqli_query($conn, $sqlGetSupplier);
+          // SEND MAIL TO REQUESTING EMPLOYEE
+          $sqlGetEmployee = "
+          SELECT E.name, E.email
+          FROM Employee E
+          WHERE E.id = '{$_SESSION['employee_id']}';
+          ";
+          $sqlGetEmployeeResult = mysqli_query($conn, $sqlGetEmployee);
+          // SEND MAIL
+          while ($record = mysqli_fetch_assoc($sqlGetEmployeeResult)) {
+            // SEND EMAIL
+            $to_email = 'maxvelde_3010@hotmail.com';
+            $subject = 'Product toegevoegd from IT Solutions';
+            $headers =  'MIME-Version: 1.0' . "\r\n";
+            $headers .= 'From: IT Solutions Ordering System <codrrnl@gmail.com>' . "\r\n";
+            $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+            $message = "
+            <p>Beste {$record['name']},</p>
+            <p>Er is een nieuw product voor jou toegevoegd in het IT Solutions koopportaal</p>
+            <p>Klik <a href='http://localhost/IT_Solutions_BPM_v2/src/app/buyportal/index.php'>hier</a> om het product te bestellen</p>
+            ";
+            if (mail($to_email,$subject,$message,$headers)) { //IF MAIL IS SENT SUCCESFULLY
+              $sqlDeliverOrderQuery = "
+              UPDATE `inkoop`
+              SET added = '1'
+              WHERE `id` = '{$orderId}';";
 
-          if (mysqli_query($conn, $sqlDeliverOrderQuery)) {
-            //UPDATES
-            header("Refresh:0");
-          }else{
-            echo "Error: " . $sqlDeliverOrderQuery . "<br>" . mysqli_error($conn);
+              if (mysqli_query($conn, $sqlDeliverOrderQuery)) {
+                //UPDATES
+                header("Refresh:0");
+              }else{
+                echo "Error: " . $sqlDeliverOrderQuery . "<br>" . mysqli_error($conn);
+              }
+            }else{
+              echo "Error: " . $sqlDeliverOrderQuery . "<br>" . mysqli_error($conn);
+            }
           }
         }else{
           echo "Error: " . $sqlQuery . "<br>" . mysqli_error($conn);
@@ -59,6 +112,8 @@ if ($_SESSION['logged'] != true || $_SESSION['department'] != "Purchasing") {
         echo "Error: " . $sqlQuery . "<br>" . mysqli_error($conn);
       }
     }else {
+
+
       $sqlQuery = "
       INSERT INTO `product` (`name`, `price`, `supplier`)
       VALUES ('{$record['prodName']}', '{$record['prodPrice']}', '{$record['prodSupplier']}');
@@ -70,8 +125,32 @@ if ($_SESSION['logged'] != true || $_SESSION['department'] != "Purchasing") {
         WHERE `id` = '{$orderId}';";
 
         if (mysqli_query($conn, $sqlDeliverOrderQuery)) {
-          //UPDATES
-          header("Refresh:0");
+          // SEND MAIL TO REQUESTING EMPLOYEE
+          $sqlGetEmployee = "
+          SELECT E.name, E.email
+          FROM Employee E
+          WHERE E.id = '{$_SESSION['employee_id']}';
+          ";
+          $sqlGetEmployeeResult = mysqli_query($conn, $sqlGetEmployee);
+          // SEND MAIL
+          while ($record = mysqli_fetch_assoc($sqlGetEmployeeResult)) {
+            // SEND EMAIL
+            $to_email = 'maxvelde_3010@hotmail.com';
+            $subject = 'Product toegevoegd from IT Solutions';
+            $headers =  'MIME-Version: 1.0' . "\r\n";
+            $headers .= 'From: IT Solutions Ordering System <codrrnl@gmail.com>' . "\r\n";
+            $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
+            $message = "
+            <p>Beste {$record['name']},</p>
+            <p>Er is een nieuw product voor jou toegevoegd in het IT Solutions koopportaal</p>
+            <p>Klik <a href='http://localhost/IT_Solutions_BPM_v2/src/app/buyportal/index.php'>hier</a> om het product te bestellen</p>
+            ";
+            if (mail($to_email,$subject,$message,$headers)) { //IF MAIL IS SENT SUCCESFULLY
+              header("Refresh:0");
+            }else {
+              header("Refresh:0");
+            }
+          }
         }else{
           echo "Error: " . $sqlDeliverOrderQuery . "<br>" . mysqli_error($conn);
         }
@@ -103,6 +182,14 @@ if ($_SESSION['logged'] != true || $_SESSION['department'] != "Purchasing") {
         }
       }
     }
+    if (isset($_POST['submitResId'])) {
+      if (!empty($_POST['rearchOrderId']) || trim($_POST['rearchOrderId']) != "") {
+        $sqlGetFinanceOrderResult = mysqli_query($conn, searchOrder($_POST['rearchOrderId']));
+      }else {
+        header("Refresh:0");
+      }
+    }
   }
+
 
  ?>

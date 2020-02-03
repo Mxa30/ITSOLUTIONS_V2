@@ -22,13 +22,13 @@ include "functions.php";
          <table>
            <thead>
              <th> Order id</th>
-             <th> Deliverd </th>
+             <th> Geleverd </th>
              <th> Product goedgekeurd </th>
              <th> Product ID</th>
              <th> Product naam</th>
-             <th> Amount </th>
+             <th> Aantal </th>
              <th> Totaalprijs </th>
-             <th> Paid </th>
+             <th> Betaald </th>
              <th> Actie </th>
            </thead>
            <tbody>
@@ -59,14 +59,19 @@ include "functions.php";
                  }
 
                  $totalPrice = $record['price']*$record['amount'];
-                 echo "<tr>
+
+                 $paidClassGreen = "";
+                 if ($record['paid'] == 1) {
+                   $paidClassGreen = "class='paidGreen'";
+                 }
+                 echo "<tr {$paidClassGreen}>
                  <td>{$record['id']}</td>
                  <td>{$delivered}</td>
                  <td>{$pickedUp}</td>
                  <td>{$record['prod_id']}</td>
                  <td>{$record['prodName']}</td>
                  <td>{$record['amount']}</td>
-                 <td>{$totalPrice}</td>
+                 <td>€{$totalPrice}</td>
                  <td>{$paid}</td>
                  <td>
                  <form method='post'>

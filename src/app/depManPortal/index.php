@@ -91,46 +91,58 @@ include "functions.php";
       </div>
       <div class="newItems">
         <h2>Nieuwe product verzoeken</h2>
-        <table class="requestTable">
+
+        <table class="ordersTable">
           <thead>
             <th>Naam</th>
             <th>Product</th>
-            <th>omschrijving</th>
+            <th>Product omschrijving</th>
             <th>Reden</th>
             <th>Actie</th>
           </thead>
-          <?php
+          <tbody>
 
-            $requests = [];
-            while ($record = mysqli_fetch_assoc($sqlGetRequestResult)) {
-              $requests[] = $record;
-            }
-            $_SESSION['requests'] = $requests;
-            if (!empty($_SESSION['requests'])) {
-              foreach($_SESSION['requests'] as $record){
+            <?php
+              $newRequest = [];
+              while ($record = mysqli_fetch_assoc($sqlGetRequestResult)) {
+                $newRequest[] = $record;
+              }
+              $_SESSION['newRequests'] = $newRequest;
+              if (!empty($_SESSION['newRequests'])) {
+                foreach($_SESSION['newRequests'] as $record){
+                  echo(
+                    "
+                    <tr>
+                    <td>{$record['name']}</td>
+                    <td>{$record['prodName']}</td>
+                    <td>{$record['prod_omschrijving']}</td>
+                    <td>{$record['reden']}</td>
+                    <td>
+                      <form method='post'>
+                        <button type='submit' name='acceptNewProd{$record['id']}'>Goedkeuren</button>
+                        <button type='submit' name='declineNewProd{$record['id']}'>Afkeuren</button>
+                      </form>
+                    </td>
+                    </tr>
+                    "
+                  );
+                }
+              }else {
                 echo(
                   "
                   <tr>
-                  <td>{$record['Naam']}</td
-                  <td>{$record['prodNaam']}</td>
-                  <td>{$record['prodOms']}</td>
-                  <td>{$record['Reden']}</td>
-            "); }
-            }else {
-              echo(
-                "
-                <tr>
-                <table class='emptyTable'>
-                  <tr>
-                    <td>Er zijn geen nieuwe verzoeken meer</td>
+                  <table class='emptyTable'>
+                    <tr>
+                      <td>Er zijn geen nieuwe verzoeken meer</td>
+                    </tr>
+                  </table>
                   </tr>
-                </table>
-                </tr>
-                "
-              );
-            }
-          ?>
-        </tbody>
+                  "
+                );
+              }
+            ?>
+          </tbody>
+        </table>
       </div>
     </main>
 

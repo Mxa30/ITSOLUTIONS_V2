@@ -6,13 +6,17 @@ header {
   background-color: #333333;
 }
 
+.headerContainer img {
+  display: inline-block;
+}
+
 header ul {
   margin: 0;
   padding: 0;
 }
 
 header .headerInfo{
-  margin-left: 60px
+  display: inline-block
 }
 
 header .headerInfo li {
@@ -29,19 +33,22 @@ header .headerInfo li {
 
 header .headerNav {
   float: right;
-  margin-right: 60px
+  margin-right: 60px;
+  display: inline-block;
 }
 
 header .headerNav li {
   display: inline-block;
   background-color: #b9b9b9;
-  margin: 0;
+  margin-left: 10px;
   color: #000;
   text-align: center;
   padding: 16px;
   text-decoration: none;
   user-select: none;
   cursor: pointer;
+  border-radius: 5px;
+  transition: .2s all ease-in-out;
 }
 
 header .headerNav li:hover {

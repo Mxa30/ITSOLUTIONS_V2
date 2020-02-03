@@ -43,6 +43,15 @@ textarea {
   text-align: center;
 }
 
+.orderContainer {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.search {
+  margin-bottom: 15px;
+}
+
 .inkoopFormulierActive {
   display: block!important;
 }

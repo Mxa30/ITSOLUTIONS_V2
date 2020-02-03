@@ -67,6 +67,82 @@ include "functions.php";
            </tbody>
          </table>
        </div>
+       <div class="orderContainer">
+         <h2>Alle geplaatste orders</h2>
+         <form method="post" class="search">
+           <input type="text" name="rearchOrderId" placeholder="Zoek op order id">
+           <input type="submit" name="submitResId" value="Submit">
+         </form>
+         <table>
+           <thead>
+             <th> Order id</th>
+             <th> Geleverd </th>
+             <th> Product goedgekeurd </th>
+             <th> Product ID</th>
+             <th> Product naam</th>
+             <th> Leverancier </th>
+             <th> Aantal </th>
+             <th> Totaalprijs </th>
+             <th> Betaald </th>
+           </thead>
+           <tbody>
+             <?php
+             $financeOrders = [];
+             while ($record = mysqli_fetch_assoc($sqlGetFinanceOrderResult)) {
+               $financeOrders[] = $record;
+             }
+             $_SESSION['financeOrders'] = $financeOrders;
+             if (!empty($_SESSION['financeOrders'])) {
+               foreach ($_SESSION['financeOrders'] as $record) {
+                 if ($record['delivered'] == 0) {
+                   $delivered = "Nee";
+                 }else {
+                   $delivered = "Ja";
+                 }
+
+                 if ($record['picked_up'] == 0) {
+                   $pickedUp = "Nee";
+                 }else {
+                   $pickedUp = "Ja";
+                 }
+
+                 if ($record['paid'] == 0) {
+                   $paid = "Nee";
+                 }else {
+                   $paid = "Ja";
+                 }
+
+                 $totalPrice = $record['price']*$record['amount'];
+
+                 $paidClassGreen = "";
+                 if ($record['paid'] == 1) {
+                   $paidClassGreen = "class='paidGreen'";
+                 }
+                 echo "<tr {$paidClassGreen}>
+                 <td>{$record['id']}</td>
+                 <td>{$delivered}</td>
+                 <td>{$pickedUp}</td>
+                 <td>{$record['prod_id']}</td>
+                 <td>{$record['prodName']}</td>
+                 <td>{$record['supplier']}</td>
+                 <td>{$record['amount']}</td>
+                 <td>€{$totalPrice}</td>
+                 <td>{$paid}</td>
+                 </tr>";
+               }
+             }else {
+               echo "
+               <table class='emptyOrder'>
+                 <tr>
+                   <td>Geen Orders gevonden</td>
+                 </tr>
+               </table>
+               ";
+             }
+             ?>
+           </tbody>
+         </table>
+       </div>
        <div class="inkoopFormulier" id="inkoopFormulierID">
          <div class="X" onclick="return closeForm()">
            <div class="line1"></div>

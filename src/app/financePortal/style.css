@@ -35,7 +35,7 @@ textarea {
 }
 
 .orderContainer {
-  margin: 0 auto;
+  margin: 0 auto 50px;
   text-align: center;
 }
 
@@ -45,4 +45,8 @@ textarea {
 
 .search {
   margin-bottom: 20px;
+}
+
+.paidGreen {
+  background-color: #21A366!important;
 }

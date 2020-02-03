@@ -15,6 +15,10 @@ include "functions.php";
     <main>
       <div class="logisticListContainer">
         <h2>Logistics List</h2>
+        <form method="post" class="search">
+          <input type="text" name="rearchOrderId" placeholder="Zoek op order id">
+          <input type="submit" name="submitResId" value="Submit">
+        </form>
         <table class="logisticTable">
           <thead>
             <tr>
@@ -22,6 +26,7 @@ include "functions.php";
               <th>Naam</th>
               <th>Department</th>
               <th>Product</th>
+              <th>Product ID</th>
               <th>Aantal</th>
               <th>Actie</th>
             </tr>
@@ -42,6 +47,7 @@ include "functions.php";
                     <td>{$record['empName']}</td>
                     <td>{$record['department_name']}</td>
                     <td>{$record['prodName']}</td>
+                    <td>{$record['prodID']}</td>
                     <td>{$record['amount']}</td>
                     <td>
                     <form method='post'>
